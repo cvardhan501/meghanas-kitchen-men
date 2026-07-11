@@ -133,11 +133,12 @@
   .hero p.sub{
     max-width:520px; margin:22px auto 0; color:var(--muted); font-size:16px; line-height:1.6;
   }
-  .hero-ctas{ display:flex; gap:14px; justify-content:center; margin-top:34px; flex-wrap:wrap; }
+  .hero-ctas{ display:flex; gap:12px; justify-content:center; margin-top:34px; flex-wrap:nowrap; }
   .cta-primary, .cta-secondary{
     font-family:var(--font-body); font-weight:700; font-size:14px; letter-spacing:0.02em;
     padding:15px 30px; border-radius:14px; text-decoration:none; cursor:pointer; border:none;
     transition:transform .25s ease, box-shadow .25s ease;
+    white-space:nowrap; text-align:center;
   }
   .cta-primary{ color:#fff; background:linear-gradient(135deg,var(--red),var(--red-2)); box-shadow:0 10px 30px rgba(226,55,68,0.3); }
   .cta-primary:hover{ transform:translateY(-2px); box-shadow:0 14px 36px rgba(226,55,68,0.45); }
@@ -157,24 +158,20 @@
     font-size:10.5px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); opacity:0.6;
   }
 
-  /* ---------- search + chips ---------- */
+  /* ---------- category chips (single line) ---------- */
   .toolbar{ position:relative; z-index:2; padding:64px 24px 0; max-width:1180px; margin:0 auto; }
-  .search-wrap{ max-width:480px; margin:0 auto 30px; position:relative; }
-  .search-wrap input{
-    width:100%; padding:15px 20px 15px 46px; border-radius:14px;
-    background:rgba(255,255,255,0.04); border:1px solid var(--line); color:var(--cream);
-    font-family:var(--font-body); font-size:14.5px; outline:none; transition:border-color .25s ease, background .25s ease;
-  }
-  .search-wrap input::placeholder{ color:var(--muted); }
-  .search-wrap input:focus{ border-color:var(--gold-soft); background:rgba(255,255,255,0.06); }
-  .search-wrap svg{ position:absolute; left:16px; top:50%; transform:translateY(-50%); width:17px; height:17px; stroke:var(--muted); }
 
-  .chips{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-bottom:8px; }
+  .chips{
+    display:flex; flex-wrap:nowrap; justify-content:flex-start; gap:10px; margin-bottom:8px;
+    overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:6px;
+  }
+  .chips::-webkit-scrollbar{ display:none; }
+  @media (min-width:900px){ .chips{ justify-content:center; } }
   .chip{
     display:flex; align-items:center; gap:7px; padding:10px 18px; border-radius:999px;
     background:rgba(255,255,255,0.03); border:1px solid var(--line); color:var(--muted);
     font-size:13px; font-weight:700; cursor:pointer; letter-spacing:0.01em;
-    transition:all .25s ease; user-select:none;
+    transition:all .25s ease; user-select:none; white-space:nowrap; flex-shrink:0;
   }
   .chip:hover{ color:var(--cream); border-color:var(--gold-soft); }
   .chip.active{
@@ -236,20 +233,6 @@
   .empty-state{ text-align:center; padding:60px 20px; color:var(--muted); display:none; }
   .empty-state.show{ display:block; }
 
-  /* ---------- floating order button ---------- */
-  .float-order{
-    position:fixed; bottom:26px; right:26px; z-index:55;
-    display:flex; align-items:center; gap:10px;
-    background:linear-gradient(135deg,var(--red),var(--red-2)); color:#fff; text-decoration:none;
-    padding:16px 22px; border-radius:999px; font-weight:800; font-size:13.5px; letter-spacing:0.02em;
-    box-shadow:0 12px 34px rgba(226,55,68,0.45);
-    animation:floatPulse 2.4s ease-in-out infinite;
-  }
-  @keyframes floatPulse{
-    0%,100%{ box-shadow:0 12px 34px rgba(226,55,68,0.4); transform:translateY(0); }
-    50%{ box-shadow:0 16px 44px rgba(226,55,68,0.6); transform:translateY(-4px); }
-  }
-
   /* ---------- footer ---------- */
   footer{
     position:relative; z-index:2; margin-top:110px; padding:70px 24px 40px;
@@ -282,9 +265,28 @@
     nav.links a{ padding:13px 14px; border-bottom:1px solid var(--line); }
     nav.links a:last-child{ border-bottom:none; }
     .nav-toggle{ display:block; }
-    .announce span.msg{ font-size:11.5px; }
-    .announce{ padding:8px 8px 8px 14px; }
+    .announce span.msg{ font-size:10.5px; }
+    .announce{ padding:8px 8px 8px 12px; gap:8px; }
     .bike-stage{ height:150px; }
+    header.nav{ padding-top:70px; }
+    .hero{ padding-top:150px; }
+
+    .hero-ctas{ gap:8px; }
+    .cta-primary, .cta-secondary{ padding:13px 14px; font-size:12.5px; flex:1 1 0; }
+
+    .menu-section{ padding:44px 14px 0; }
+    .section-head{ margin-bottom:22px; }
+    .section-head h2{ font-size:24px; }
+    .grid{ grid-template-columns:repeat(2,1fr); gap:10px; }
+    .card{ padding:12px; border-radius:14px; }
+    .card h3{ font-size:13.5px; margin:8px 0 3px; line-height:1.25; min-height:34px; }
+    .card p.desc{ display:none; }
+    .badge{ font-size:8px; padding:3px 7px; }
+    .dot{ width:12px; height:12px; }
+    .price{ font-size:15px; }
+    .price small{ display:block; margin-left:0; font-size:9px; }
+    .add-btn{ width:30px; height:30px; font-size:15px; border-radius:8px; }
+    .card-bottom{ align-items:flex-end; }
   }
 </style>
 </head>
@@ -343,29 +345,20 @@
 
 <!-- search + chips -->
 <div class="toolbar">
-  <div class="search-wrap">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="text" id="searchInput" placeholder="Search for chicken, paneer, biryani…" />
-  </div>
   <div class="chips" id="chipRow">
-    <div class="chip active" data-filter="all">✨ All</div>
-    <div class="chip" data-filter="veg-starter">🥦 Veg Starters</div>
-    <div class="chip" data-filter="egg">🥚 Egg</div>
-    <div class="chip" data-filter="nonveg-starter">🍗 Non Veg</div>
-    <div class="chip" data-filter="fish">🐟 Fish</div>
-    <div class="chip" data-filter="curries">🍛 Curries</div>
-    <div class="chip" data-filter="biryani">🍚 Biryani</div>
-    <div class="chip" data-filter="rice">🍜 Rice</div>
+    <div class="chip active" data-filter="all">All</div>
+    <div class="chip" data-filter="veg-starter">Veg Starters</div>
+    <div class="chip" data-filter="egg">Egg</div>
+    <div class="chip" data-filter="nonveg-starter">Non Veg</div>
+    <div class="chip" data-filter="fish">Fish</div>
+    <div class="chip" data-filter="curries">Curries</div>
+    <div class="chip" data-filter="biryani">Biryani</div>
+    <div class="chip" data-filter="rice">Rice</div>
   </div>
 </div>
 
 <!-- menu render target -->
 <main id="menuRoot"></main>
-
-<!-- floating order button -->
-<a class="float-order" href="https://zomato.onelink.me/xqzv/2e2047tk" target="_blank" rel="noopener">
-  <span>🛵</span> Order on Zomato
-</a>
 
 <!-- footer -->
 <footer id="contact">
@@ -634,10 +627,7 @@ document.getElementById('chipRow').addEventListener('click', e=>{
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
   chip.classList.add('active');
   currentFilter = chip.dataset.filter;
-  render(currentFilter, document.getElementById('searchInput').value.trim().toLowerCase());
-});
-document.getElementById('searchInput').addEventListener('input', e=>{
-  render(currentFilter, e.target.value.trim().toLowerCase());
+  render(currentFilter, '');
 });
 
 render('all','');
