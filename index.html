@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Meghan's Kitchen — Order Online</title>
+<meta name="description" content="Meghan's Kitchen — Andhra & Hyderabadi flavours, biryani, curries and more. Order online on Zomato.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root{
+    --ink:#0a0a0d;
+    --ink-2:#111117;
+    --charcoal:#17161d;
+    --charcoal-2:#1e1c24;
+    --line: rgba(212,175,106,0.16);
+    --red:#e23744;
+    --red-2:#ff4d59;
+    --gold:#d4af6a;
+    --gold-soft: rgba(212,175,106,0.5);
+    --cream:#f4efe6;
+    --muted: #b8b3ad;
+    --teal-deep:#0d2027;
+    --font-display: 'Fraunces', serif;
+    --font-body: 'Manrope', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--cream);
+    font-family:var(--font-body);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--red); color:#fff; }
+
+  /* ---------- ambient background ---------- */
+  .bg-ambient{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(ellipse 60% 40% at 15% 8%, rgba(226,55,68,0.16), transparent 60%),
+      radial-gradient(ellipse 50% 35% at 88% 18%, rgba(212,175,106,0.10), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 50% 100%, rgba(13,32,39,0.7), transparent 60%),
+      linear-gradient(180deg, #0a0a0d 0%, #0c0b10 40%, #0a0a0d 100%);
+  }
+  .grain{
+    position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.035; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .floaty{ position:fixed; z-index:0; pointer-events:none; opacity:0.5; filter:blur(0.5px); animation:drift 14s ease-in-out infinite; }
+  @keyframes drift{ 0%,100%{ transform:translateY(0) rotate(0deg);} 50%{ transform:translateY(-26px) rotate(14deg);} }
+
+  /* ---------- gold flourish (signature motif, echoes the print menu) ---------- */
+  .flourish{ display:flex; align-items:center; justify-content:center; gap:10px; margin:10px 0 0; }
+  .flourish svg{ width:120px; height:14px; opacity:0.75; }
+  .flourish-line{ stroke:var(--gold); }
+
+  /* ---------- announcement bar ---------- */
+  .announce-wrap{
+    position:fixed; top:14px; left:0; right:0; z-index:60;
+    display:flex; justify-content:center; padding:0 16px;
+  }
+  .announce{
+    display:flex; align-items:center; gap:14px;
+    background:rgba(23,22,29,0.55);
+    border:1px solid var(--line);
+    backdrop-filter:blur(18px) saturate(140%);
+    -webkit-backdrop-filter:blur(18px) saturate(140%);
+    border-radius:999px;
+    padding:9px 10px 9px 20px;
+    box-shadow:0 8px 30px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04);
+    animation:floatBar 5s ease-in-out infinite;
+    max-width:96vw;
+  }
+  @keyframes floatBar{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-5px);} }
+  .announce span.msg{ font-size:13px; font-weight:600; letter-spacing:0.01em; color:var(--cream); white-space:nowrap; }
+  .announce .btn-order{
+    white-space:nowrap; font-family:var(--font-body); font-weight:700; font-size:12.5px; letter-spacing:0.03em;
+    color:#fff; background:linear-gradient(135deg,var(--red),var(--red-2));
+    padding:9px 18px; border-radius:999px; text-decoration:none;
+    box-shadow:0 0 0 0 rgba(226,55,68,0.6);
+    animation:glowPulse 2.2s ease-in-out infinite;
+    border:none; cursor:pointer;
+  }
+  @keyframes glowPulse{
+    0%,100%{ box-shadow:0 0 0 0 rgba(226,55,68,0.45), 0 4px 14px rgba(226,55,68,0.35); }
+    50%{ box-shadow:0 0 0 8px rgba(226,55,68,0), 0 4px 22px rgba(226,55,68,0.55); }
+  }
+
+  /* ---------- header ---------- */
+  header.nav{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px clamp(16px,4vw,48px) 14px;
+    background:linear-gradient(180deg, rgba(10,10,13,0.92), rgba(10,10,13,0.55) 70%, transparent);
+    backdrop-filter:blur(10px);
+  }
+  .logo{ display:flex; align-items:baseline; gap:8px; font-family:var(--font-display); }
+  .logo .mark{ font-size:24px; font-weight:700; color:var(--cream); letter-spacing:0.01em; }
+  .logo .mark em{ font-style:italic; color:var(--gold); }
+  .logo .tag{ font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); }
+  nav.links{ display:flex; gap:26px; list-style:none; }
+  nav.links a{
+    color:var(--muted); text-decoration:none; font-size:13.5px; font-weight:600;
+    letter-spacing:0.02em; position:relative; padding-bottom:4px; transition:color .25s ease;
+  }
+  nav.links a::after{
+    content:''; position:absolute; left:0; bottom:0; width:0; height:1px; background:var(--gold);
+    transition:width .3s ease;
+  }
+  nav.links a:hover{ color:var(--cream); }
+  nav.links a:hover::after{ width:100%; }
+  .nav-toggle{ display:none; background:none; border:1px solid var(--line); border-radius:10px; padding:9px 11px; cursor:pointer; }
+  .nav-toggle span{ display:block; width:18px; height:1.5px; background:var(--cream); margin:4px 0; }
+
+  /* ---------- hero ---------- */
+  .hero{ position:relative; z-index:2; padding:150px 24px 10px; text-align:center; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px; color:var(--gold); font-size:11.5px;
+    letter-spacing:0.24em; text-transform:uppercase; font-weight:700; margin-bottom:22px;
+  }
+  .eyebrow::before,.eyebrow::after{ content:''; width:24px; height:1px; background:var(--gold-soft); }
+  .hero h1{
+    font-family:var(--font-display); font-weight:600; font-style:italic;
+    font-size:clamp(40px,7vw,84px); line-height:1.02; margin:0 auto; max-width:15ch;
+    color:var(--cream);
+  }
+  .hero h1 .accent{ color:var(--red); font-style:normal; font-weight:700; }
+  .hero p.sub{
+    max-width:520px; margin:22px auto 0; color:var(--muted); font-size:16px; line-height:1.6;
+  }
+  .hero-ctas{ display:flex; gap:14px; justify-content:center; margin-top:34px; flex-wrap:wrap; }
+  .cta-primary, .cta-secondary{
+    font-family:var(--font-body); font-weight:700; font-size:14px; letter-spacing:0.02em;
+    padding:15px 30px; border-radius:14px; text-decoration:none; cursor:pointer; border:none;
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .cta-primary{ color:#fff; background:linear-gradient(135deg,var(--red),var(--red-2)); box-shadow:0 10px 30px rgba(226,55,68,0.3); }
+  .cta-primary:hover{ transform:translateY(-2px); box-shadow:0 14px 36px rgba(226,55,68,0.45); }
+  .cta-secondary{ color:var(--cream); background:rgba(255,255,255,0.05); border:1px solid var(--line); }
+  .cta-secondary:hover{ transform:translateY(-2px); border-color:var(--gold-soft); }
+
+  /* ---------- 3D bike stage ---------- */
+  .bike-stage{
+    position:relative; width:100%; max-width:1100px; height:210px; margin:56px auto 0;
+    border-radius:24px; overflow:hidden;
+    background:linear-gradient(180deg, rgba(212,175,106,0.05), transparent 40%), rgba(255,255,255,0.02);
+    border:1px solid var(--line);
+  }
+  .bike-stage canvas{ display:block; width:100%; height:100%; }
+  .bike-road-label{
+    position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
+    font-size:10.5px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); opacity:0.6;
+  }
+
+  /* ---------- search + chips ---------- */
+  .toolbar{ position:relative; z-index:2; padding:64px 24px 0; max-width:1180px; margin:0 auto; }
+  .search-wrap{ max-width:480px; margin:0 auto 30px; position:relative; }
+  .search-wrap input{
+    width:100%; padding:15px 20px 15px 46px; border-radius:14px;
+    background:rgba(255,255,255,0.04); border:1px solid var(--line); color:var(--cream);
+    font-family:var(--font-body); font-size:14.5px; outline:none; transition:border-color .25s ease, background .25s ease;
+  }
+  .search-wrap input::placeholder{ color:var(--muted); }
+  .search-wrap input:focus{ border-color:var(--gold-soft); background:rgba(255,255,255,0.06); }
+  .search-wrap svg{ position:absolute; left:16px; top:50%; transform:translateY(-50%); width:17px; height:17px; stroke:var(--muted); }
+
+  .chips{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-bottom:8px; }
+  .chip{
+    display:flex; align-items:center; gap:7px; padding:10px 18px; border-radius:999px;
+    background:rgba(255,255,255,0.03); border:1px solid var(--line); color:var(--muted);
+    font-size:13px; font-weight:700; cursor:pointer; letter-spacing:0.01em;
+    transition:all .25s ease; user-select:none;
+  }
+  .chip:hover{ color:var(--cream); border-color:var(--gold-soft); }
+  .chip.active{
+    color:#fff; background:linear-gradient(135deg,var(--red),var(--red-2)); border-color:transparent;
+    box-shadow:0 6px 20px rgba(226,55,68,0.4);
+  }
+
+  /* ---------- menu sections ---------- */
+  .menu-section{ position:relative; z-index:2; max-width:1180px; margin:0 auto; padding:70px 24px 10px; }
+  .section-head{ text-align:center; margin-bottom:38px; }
+  .section-head .eyebrow-sm{ color:var(--gold); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; font-weight:700; }
+  .section-head h2{ font-family:var(--font-display); font-size:clamp(28px,4vw,42px); font-weight:600; margin:8px 0 0; }
+
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:22px;
+  }
+  .card{
+    position:relative; border-radius:20px; padding:20px;
+    background:linear-gradient(160deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
+    border:1px solid var(--line);
+    backdrop-filter:blur(10px);
+    transform-style:preserve-3d; perspective:900px;
+    transition:transform .35s cubic-bezier(.2,.7,.3,1), box-shadow .35s ease, border-color .35s ease;
+    opacity:0; transform:translateY(24px);
+  }
+  .card.show{ opacity:1; transform:translateY(0); }
+  .card:hover{
+    box-shadow:0 24px 50px rgba(0,0,0,0.45), 0 0 0 1px var(--gold-soft);
+    border-color:var(--gold-soft);
+  }
+  .card-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .dot{
+    width:15px; height:15px; border-radius:3px; border:2px solid; flex-shrink:0; margin-top:3px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .dot::after{ content:''; width:6px; height:6px; border-radius:50%; }
+  .dot.veg{ border-color:#2e9e4f; } .dot.veg::after{ background:#2e9e4f; }
+  .dot.nonveg{ border-color:#c73434; } .dot.nonveg::after{ background:#c73434; }
+  .dot.egg{ border-color:#d9a521; } .dot.egg::after{ background:#d9a521; }
+
+  .badge{
+    font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase; font-weight:800;
+    color:var(--gold); border:1px solid var(--gold-soft); padding:4px 9px; border-radius:999px;
+    white-space:nowrap;
+  }
+  .card h3{ font-family:var(--font-display); font-size:19px; font-weight:600; margin:14px 0 4px; color:var(--cream); }
+  .card p.desc{ font-size:12.5px; color:var(--muted); line-height:1.5; margin:0 0 14px; min-height:32px; }
+  .card-bottom{ display:flex; align-items:center; justify-content:space-between; }
+  .price{ font-family:var(--font-display); font-size:20px; font-weight:700; color:var(--cream); }
+  .price small{ font-family:var(--font-body); font-size:10px; color:var(--muted); font-weight:600; margin-left:5px; }
+  .add-btn{
+    width:38px; height:38px; border-radius:11px; border:1px solid var(--line); background:rgba(255,255,255,0.03);
+    color:var(--gold); font-size:19px; display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition:all .25s ease;
+  }
+  .add-btn:hover{ background:var(--red); border-color:var(--red); color:#fff; transform:scale(1.06); }
+  .add-btn.added{ background:#2e9e4f; border-color:#2e9e4f; color:#fff; }
+
+  .empty-state{ text-align:center; padding:60px 20px; color:var(--muted); display:none; }
+  .empty-state.show{ display:block; }
+
+  /* ---------- floating order button ---------- */
+  .float-order{
+    position:fixed; bottom:26px; right:26px; z-index:55;
+    display:flex; align-items:center; gap:10px;
+    background:linear-gradient(135deg,var(--red),var(--red-2)); color:#fff; text-decoration:none;
+    padding:16px 22px; border-radius:999px; font-weight:800; font-size:13.5px; letter-spacing:0.02em;
+    box-shadow:0 12px 34px rgba(226,55,68,0.45);
+    animation:floatPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes floatPulse{
+    0%,100%{ box-shadow:0 12px 34px rgba(226,55,68,0.4); transform:translateY(0); }
+    50%{ box-shadow:0 16px 44px rgba(226,55,68,0.6); transform:translateY(-4px); }
+  }
+
+  /* ---------- footer ---------- */
+  footer{
+    position:relative; z-index:2; margin-top:110px; padding:70px 24px 40px;
+    border-top:1px solid var(--line);
+    background:linear-gradient(180deg, transparent, rgba(226,55,68,0.05));
+  }
+  .footer-grid{
+    max-width:1180px; margin:0 auto; display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:40px;
+  }
+  .footer-grid h4{ font-family:var(--font-display); font-size:15px; letter-spacing:0.02em; color:var(--gold); margin:0 0 16px; text-transform:uppercase; font-size:12px;}
+  .footer-grid p, .footer-grid a{ color:var(--muted); font-size:13.5px; line-height:2; text-decoration:none; }
+  .footer-grid a:hover{ color:var(--cream); }
+  .social-row{ display:flex; gap:12px; margin-top:8px; }
+  .social-row a{
+    width:38px; height:38px; border-radius:10px; border:1px solid var(--line); display:flex; align-items:center;
+    justify-content:center; color:var(--cream);
+  }
+  .social-row a:hover{ border-color:var(--gold-soft); color:var(--gold); }
+  .footer-bottom{ text-align:center; margin-top:56px; font-size:12px; color:var(--muted); opacity:0.6; }
+
+  @media (max-width:820px){
+    .footer-grid{ grid-template-columns:1fr; }
+    nav.links{
+      position:fixed; top:78px; left:16px; right:16px; z-index:49;
+      flex-direction:column; gap:0; background:rgba(17,16,23,0.97); border:1px solid var(--line);
+      border-radius:16px; padding:8px; transform:translateY(-12px); opacity:0; pointer-events:none;
+      transition:all .3s ease;
+    }
+    nav.links.open{ transform:translateY(0); opacity:1; pointer-events:auto; }
+    nav.links a{ padding:13px 14px; border-bottom:1px solid var(--line); }
+    nav.links a:last-child{ border-bottom:none; }
+    .nav-toggle{ display:block; }
+    .announce span.msg{ font-size:11.5px; }
+    .announce{ padding:8px 8px 8px 14px; }
+    .bike-stage{ height:150px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-ambient"></div>
+<div class="grain"></div>
+
+<!-- floating ambient icons -->
+<div class="floaty" style="top:22%; left:6%; font-size:26px; animation-delay:0s;">🌶️</div>
+<div class="floaty" style="top:60%; left:3%; font-size:22px; animation-delay:3s;">🍃</div>
+<div class="floaty" style="top:15%; right:8%; font-size:24px; animation-delay:1.5s;">✨</div>
+<div class="floaty" style="top:70%; right:5%; font-size:22px; animation-delay:5s;">🌿</div>
+
+<!-- announcement bar -->
+<div class="announce-wrap">
+  <div class="announce">
+    <span class="msg">🍽️ We're LIVE on Zomato — Order Online</span>
+    <a class="btn-order" href="https://zomato.onelink.me/xqzv/2e2047tk" target="_blank" rel="noopener">Order Now</a>
+  </div>
+</div>
+
+<!-- header -->
+<header class="nav">
+  <div class="logo">
+    <span class="mark">Meghan's <em>Kitchen</em></span>
+  </div>
+  <nav class="links" id="navLinks">
+    <a href="#home" onclick="closeNav()">Home</a>
+    <a href="#veg" onclick="closeNav()">Veg</a>
+    <a href="#nonveg" onclick="closeNav()">Non Veg</a>
+    <a href="#egg" onclick="closeNav()">Egg</a>
+    <a href="#fish" onclick="closeNav()">Fish</a>
+    <a href="#rice" onclick="closeNav()">Rice</a>
+    <a href="#biryani" onclick="closeNav()">Biryani</a>
+    <a href="#contact" onclick="closeNav()">Contact</a>
+  </nav>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu"><span></span><span></span><span></span></button>
+</header>
+
+<!-- hero -->
+<section class="hero" id="home">
+  <div class="eyebrow">Andhra &amp; Hyderabadi Kitchen</div>
+  <h1>Bold flavour,<br><span class="accent">served</span> <em>fresh.</em></h1>
+  <p class="sub">From smoky Andhra chicken to slow-cooked biryani — every dish on our menu, ready to browse, and one tap away from your door.</p>
+  <div class="hero-ctas">
+    <a class="cta-primary" href="https://zomato.onelink.me/xqzv/2e2047tk" target="_blank" rel="noopener">Order on Zomato</a>
+    <a class="cta-secondary" href="#veg">Explore the Menu</a>
+  </div>
+
+  <div class="bike-stage" id="bikeStage">
+    <canvas id="bikeCanvas"></canvas>
+    <div class="bike-road-label">delivering hot, always on time</div>
+  </div>
+</section>
+
+<!-- search + chips -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="searchInput" placeholder="Search for chicken, paneer, biryani…" />
+  </div>
+  <div class="chips" id="chipRow">
+    <div class="chip active" data-filter="all">✨ All</div>
+    <div class="chip" data-filter="veg-starter">🥦 Veg Starters</div>
+    <div class="chip" data-filter="egg">🥚 Egg</div>
+    <div class="chip" data-filter="nonveg-starter">🍗 Non Veg</div>
+    <div class="chip" data-filter="fish">🐟 Fish</div>
+    <div class="chip" data-filter="curries">🍛 Curries</div>
+    <div class="chip" data-filter="biryani">🍚 Biryani</div>
+    <div class="chip" data-filter="rice">🍜 Rice</div>
+  </div>
+</div>
+
+<!-- menu render target -->
+<main id="menuRoot"></main>
+
+<!-- floating order button -->
+<a class="float-order" href="https://zomato.onelink.me/xqzv/2e2047tk" target="_blank" rel="noopener">
+  <span>🛵</span> Order on Zomato
+</a>
+
+<!-- footer -->
+<footer id="contact">
+  <div class="footer-grid">
+    <div>
+      <div class="logo" style="margin-bottom:14px;"><span class="mark">Meghan's <em>Kitchen</em></span></div>
+      <p style="max-width:320px;">Andhra and Hyderabadi cooking, made the slow way — bold spice, honest ingredients, fast delivery.</p>
+      <div class="social-row">
+        <a href="#" aria-label="Instagram">IG</a>
+        <a href="#" aria-label="Facebook">FB</a>
+        <a href="https://zomato.onelink.me/xqzv/2e2047tk" target="_blank" rel="noopener" aria-label="Zomato">Z</a>
+        <a href="#" aria-label="Google Maps">GM</a>
+      </div>
+    </div>
+    <div>
+      <h4>Visit</h4>
+      <p>📍 [ Add your restaurant address here ]</p>
+      <p>📞 [ Add your phone number ]</p>
+      <p>🕒 11:00 AM – 11:00 PM, all week</p>
+    </div>
+    <div>
+      <h4>Quick Links</h4>
+      <p><a href="#veg">Veg Menu</a></p>
+      <p><a href="#nonveg">Non-Veg Menu</a></p>
+      <p><a href="#biryani">Biryani</a></p>
+      <p><a href="https://zomato.onelink.me/xqzv/2e2047tk" target="_blank" rel="noopener">Order on Zomato</a></p>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Meghan's Kitchen. All rights reserved.</div>
+</footer>
+
+<script>
+/* ============ MENU DATA (extracted from uploaded menu.pdf) ============ */
+const MENU = [
+  // --- Veg Starter ---
+  ["Finger Chips","veg-starter","veg",100],
+  ["Crispy Corn","veg-starter","veg",130],
+  ["Boiled Corn","veg-starter","veg",130],
+  ["Paneer Pepper Dry","veg-starter","veg",160],
+  ["Paneer Chilli","veg-starter","veg",170],
+  ["Paneer Manchurian","veg-starter","veg",170],
+  ["Paneer Majestic","veg-starter","veg",180],
+  ["Mushroom Pepper Dry","veg-starter","veg",160],
+  ["Mushroom Chilli","veg-starter","veg",170],
+  ["Mushroom Manchurian","veg-starter","veg",170],
+  ["Gobi Pepper Dry","veg-starter","veg",100],
+  ["Gobi Manchurian","veg-starter","veg",110],
+  ["Gobi Kaba","veg-starter","veg",120],
+  ["Gobi Chilli","veg-starter","veg",130],
+  ["Kaju Dry","veg-starter","veg",200],
+  ["Bendi Dry","veg-starter","veg",100],
+  ["Palak Pakoda","veg-starter","veg",100],
+  ["Onion Pakoda","veg-starter","veg",100],
+  ["Capsicum Pakoda","veg-starter","veg",110],
+  ["Veg Mongolian","veg-starter","veg",140],
+  ["Veg Bullet","veg-starter","veg",150],
+  ["Veg Gold Coin","veg-starter","veg",160],
+  ["Veg Albela","veg-starter","veg",130],
+  ["Groundnut Dry","veg-starter","veg",60],
+  ["Groundnut Masala","veg-starter","veg",100],
+
+  // --- Egg Starter + Egg Masala ---
+  ["Egg Manchurian","egg","egg",120],
+  ["Egg 65","egg","egg",120],
+  ["Egg Mongolian","egg","egg",120],
+  ["Egg Pepper Dry","egg","egg",120],
+  ["Egg Chilli","egg","egg",120],
+  ["Egg Burji","egg","egg",110],
+  ["Egg Pakoda","egg","egg",110],
+  ["Egg Masala","egg","egg",120],
+  ["Egg Keema","egg","egg",120],
+
+  // --- Non-Veg Starter ---
+  ["Chicken Manchurian","nonveg-starter","nonveg",190],
+  ["Chicken Chilli","nonveg-starter","nonveg",210],
+  ["Chicken 65","nonveg-starter","nonveg",220],
+  ["Chicken 555","nonveg-starter","nonveg",230],
+  ["Chicken Lollipop (4pc)","nonveg-starter","nonveg",230],
+  ["Chicken Pepper Dry","nonveg-starter","nonveg","180/200"],
+  ["Chicken Kabab","nonveg-starter","nonveg","180/200"],
+  ["Chicken Mongolian","nonveg-starter","nonveg","190/210"],
+  ["Chicken Ghee Roast","nonveg-starter","nonveg","200/220"],
+  ["Chicken Lemon","nonveg-starter","nonveg","180/200"],
+  ["Chicken Royal","nonveg-starter","nonveg","230/250"],
+  ["Chicken Garlic","nonveg-starter","nonveg","240/260"],
+  ["Chicken Sehezwan","nonveg-starter","nonveg","200/210"],
+  ["Chicken Guntur","nonveg-starter","nonveg","220/240"],
+  ["Chicken Andhra","nonveg-starter","nonveg","210/220"],
+  ["Chicken Wings","nonveg-starter","nonveg",210],
+  ["Chicken Wings Andhra","nonveg-starter","nonveg",220],
+
+  // --- Non-Veg Masala (curries) ---
+  ["Butter Chicken Masala","curries","nonveg","210/230"],
+  ["Chicken Hyderabadi Masala","curries","nonveg","220/240"],
+  ["Chicken Kolhapur Masala","curries","nonveg","220/230"],
+  ["Chicken Andhra Masala","curries","nonveg","220/230"],
+  ["Telangana Chicken","curries","nonveg","240/260"],
+  ["Fish Andhra Masala","curries","nonveg",280],
+  ["Fish Garlic Masala","curries","nonveg",310],
+
+  // --- Fish Starter ---
+  ["Fish Kabab","fish","nonveg",260],
+  ["Fish Andhra","fish","nonveg",260],
+  ["Fish Garlic","fish","nonveg",280],
+  ["Fish Mongolian","fish","nonveg",260],
+  ["Fish Tava (3pc)","fish","nonveg",260],
+  ["Apollo Fish","fish","nonveg",260],
+
+  // --- Veg Curries ---
+  ["Dal Fry","curries","veg",100],
+  ["Dal Tadka","curries","veg",110],
+  ["Aloo Gobi Masala","curries","veg",120],
+  ["Mix Veg Masala","curries","veg",120],
+  ["Dal Kolhapur","curries","veg",120],
+  ["Mushroom Masala","curries","veg",160],
+  ["Paneer Butter Masala","curries","veg",180],
+  ["Palak Paneer","curries","veg",150],
+  ["Kaju Paneer Masala","curries","veg",230],
+  ["Kaju Masala","curries","veg",210],
+  ["Bendi Fry","curries","veg",100],
+  ["Bendi Masala","curries","veg",110],
+  ["Tomato Masala","curries","veg",100],
+
+  // --- Biryani ---
+  ["Chicken Biryani (Hyderabadi)","biryani","nonveg",220],
+  ["Chicken Biryani Special","biryani","nonveg",260],
+  ["Kushka","biryani","veg",110],
+  ["Fish Biryani","biryani","nonveg",290],
+  ["Fish Biryani Special","biryani","nonveg",310],
+  ["Egg Biryani","biryani","egg",160],
+  ["Egg Biryani Special","biryani","egg",170],
+  ["Veg Biryani","biryani","veg",120],
+  ["Veg Mughlai","biryani","veg",110],
+
+  // --- Rice Items ---
+  ["Dal Khichdi","rice","veg",110],
+  ["Veg Fried Rice","rice","veg",120],
+  ["Egg Fried Rice","rice","egg",130],
+  ["Schezwan Fried Rice","rice","veg",140],
+  ["Jeera Rice","rice","veg",130],
+  ["Masala Rice","rice","veg",110],
+  ["Lemon Rice","rice","veg",110],
+  ["Pudina Rice","rice","veg",110],
+  ["Ghee Rice","rice","veg",150],
+  ["Mushroom Fried Rice","rice","veg",150],
+  ["Kaju Fried Rice","rice","veg",160],
+  ["Onion Chilli Fried Rice","rice","veg",130],
+  ["Gobi Fried Rice","rice","veg",120],
+  ["Boiled Egg Rice","rice","egg",120],
+  ["Kaju Paneer Fried Rice","rice","veg",190],
+  ["Chicken Fried Rice","rice","nonveg",170],
+  ["Special Chicken Fried Rice","rice","nonveg",190],
+  ["Curd Rice","rice","veg",80],
+  ["Special Curd Rice","rice","veg",100],
+  ["Plain Rice","rice","veg",40],
+].map((row,i)=>({ id:i, name:row[0], cat:row[1], type:row[2], price:row[3] }));
+
+const CAT_LABEL = {
+  "veg-starter":"Veg Starters", "egg":"Egg Specials", "nonveg-starter":"Non-Veg Starters",
+  "fish":"Fish Specials", "curries":"Curries", "biryani":"Biryani", "rice":"Rice Items"
+};
+const CAT_DESC = {
+  "veg-starter":"Crisp, tossed, and fired up dry starters", "egg":"Egg done every possible way",
+  "nonveg-starter":"Chicken and wings, dry-roasted and fiery", "fish":"Fresh catch, Andhra style",
+  "curries":"Slow-simmered gravies, veg and non-veg", "biryani":"Dum-cooked, layered, unhurried",
+  "rice":"Fried rice and comfort bowls"
+};
+const DESC_POOL = [
+  "House special, made fresh to order.","Slow-cooked with our signature spice blend.",
+  "A guest favourite, every single time.","Finished with fresh curry leaves and chilli.",
+  "Rich, aromatic, and full of depth.","Chef's recommendation this season."
+];
+function descFor(item){ return DESC_POOL[item.id % DESC_POOL.length]; }
+function priceHtml(p){
+  if (typeof p === "string" && p.includes("/")){
+    const [h,f] = p.split("/");
+    return `₹${f}<small>full · ₹${h} half</small>`;
+  }
+  return `₹${p}`;
+}
+const flourishSVG = `<svg viewBox="0 0 120 14"><path class="flourish-line" fill="none" stroke-width="1" d="M0 7 H40 M80 7 H120 M50 7 C54 1, 60 1, 60 7 C60 13, 66 13, 70 7"/><circle class="flourish-line" cx="60" cy="7" r="1.6" fill="var(--gold)"/></svg>`;
+
+const menuRoot = document.getElementById('menuRoot');
+const ORDER = ["veg-starter","egg","nonveg-starter","fish","curries","biryani","rice"];
+
+function render(filter, query){
+  menuRoot.innerHTML = "";
+  let anyResults = false;
+  ORDER.forEach(cat=>{
+    if (filter !== "all" && filter !== cat) return;
+    let items = MENU.filter(m=>m.cat===cat);
+    if (query){ items = items.filter(m=>m.name.toLowerCase().includes(query)); }
+    if (!items.length) return;
+    anyResults = true;
+    const section = document.createElement('section');
+    section.className = 'menu-section';
+    const idMap = { 'veg-starter':'veg', 'nonveg-starter':'nonveg' };
+    section.id = idMap[cat] || cat;
+    section.innerHTML = `
+      <div class="section-head">
+        <div class="eyebrow-sm">${CAT_LABEL[cat]}</div>
+        <h2>${CAT_LABEL[cat]}</h2>
+        <p style="color:var(--muted);font-size:14px;margin-top:8px;">${CAT_DESC[cat]}</p>
+        <div class="flourish">${flourishSVG}</div>
+      </div>
+      <div class="grid">
+        ${items.map(m=>`
+          <div class="card" data-id="${m.id}">
+            <div class="card-top">
+              <div class="dot ${m.type}"></div>
+              <span class="badge">${CAT_LABEL[cat]}</span>
+            </div>
+            <h3>${m.name}</h3>
+            <p class="desc">${descFor(m)}</p>
+            <div class="card-bottom">
+              <span class="price">${priceHtml(m.price)}</span>
+              <button class="add-btn" onclick="toggleAdd(this)">+</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    menuRoot.appendChild(section);
+  });
+
+  document.getElementById('emptyState')?.remove();
+  if (!anyResults){
+    const empty = document.createElement('div');
+    empty.id = 'emptyState';
+    empty.className = 'empty-state show';
+    empty.innerHTML = `<div style="font-size:38px;margin-bottom:10px;">🍽️</div><p>No dishes match your search. Try another name, or browse a category above.</p>`;
+    menuRoot.appendChild(empty);
+  }
+
+  requestAnimationFrame(()=>{
+    const cards = document.querySelectorAll('.card');
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if (e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); } });
+    }, { threshold:0.1 });
+    cards.forEach(c=>io.observe(c));
+
+    // 3D tilt on hover (skip on touch/coarse pointers)
+    if (window.matchMedia('(pointer:fine)').matches){
+      cards.forEach(card=>{
+        card.addEventListener('mousemove', e=>{
+          const r = card.getBoundingClientRect();
+          const x = (e.clientX - r.left)/r.width - 0.5;
+          const y = (e.clientY - r.top)/r.height - 0.5;
+          card.style.transform = `translateY(-4px) rotateX(${y*-8}deg) rotateY(${x*10}deg) scale(1.02)`;
+        });
+        card.addEventListener('mouseleave', ()=>{ card.style.transform = ''; });
+      });
+    }
+  });
+}
+
+function toggleAdd(btn){
+  btn.classList.toggle('added');
+  btn.textContent = btn.classList.contains('added') ? '✓' : '+';
+}
+
+let currentFilter = 'all';
+document.getElementById('chipRow').addEventListener('click', e=>{
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+  currentFilter = chip.dataset.filter;
+  render(currentFilter, document.getElementById('searchInput').value.trim().toLowerCase());
+});
+document.getElementById('searchInput').addEventListener('input', e=>{
+  render(currentFilter, e.target.value.trim().toLowerCase());
+});
+
+render('all','');
+
+function toggleNav(){ document.getElementById('navLinks').classList.toggle('open'); }
+function closeNav(){ document.getElementById('navLinks').classList.remove('open'); }
+
+/* ============ 3D delivery bike — Three.js ============ */
+(function(){
+  const stage = document.getElementById('bikeStage');
+  const canvas = document.getElementById('bikeCanvas');
+  if (!window.THREE) return;
+
+  let w = stage.clientWidth, h = stage.clientHeight;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(38, w/h, 0.1, 100);
+  camera.position.set(0, 2.1, 8.5);
+  camera.lookAt(0,1,0);
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(w,h);
+
+  scene.add(new THREE.AmbientLight(0xfff2e0, 0.7));
+  const key = new THREE.DirectionalLight(0xffe3b0, 1.1);
+  key.position.set(4,6,5);
+  scene.add(key);
+  const rim = new THREE.PointLight(0xe23744, 1.2, 20);
+  rim.position.set(-3,2,3);
+  scene.add(rim);
+
+  // road
+  const road = new THREE.Mesh(
+    new THREE.PlaneGeometry(40,3),
+    new THREE.MeshStandardMaterial({ color:0x1a1820, roughness:0.9 })
+  );
+  road.rotation.x = -Math.PI/2;
+  road.position.y = -0.02;
+  scene.add(road);
+
+  const goldMat = new THREE.MeshStandardMaterial({ color:0xd4af6a, roughness:0.35, metalness:0.6 });
+  const redMat  = new THREE.MeshStandardMaterial({ color:0xe23744, roughness:0.4, metalness:0.3 });
+  const darkMat = new THREE.MeshStandardMaterial({ color:0x1c1a22, roughness:0.6, metalness:0.4 });
+  const skinMat = new THREE.MeshStandardMaterial({ color:0xd8a878, roughness:0.7 });
+  const whiteMat= new THREE.MeshStandardMaterial({ color:0xf4efe6, roughness:0.5 });
+
+  const bike = new THREE.Group();
+
+  // wheels
+  function makeWheel(x){
+    const g = new THREE.Group();
+    const tire = new THREE.Mesh(new THREE.TorusGeometry(0.55,0.13,10,20), darkMat);
+    const hub  = new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.16,0.15,14), goldMat);
+    hub.rotation.x = Math.PI/2;
+    g.add(tire, hub);
+    g.position.set(x,0.55,0);
+    return g;
+  }
+  const wheelBack = makeWheel(-1.05);
+  const wheelFront = makeWheel(1.15);
+  bike.add(wheelBack, wheelFront);
+
+  // frame + body
+  const bodyMain = new THREE.Mesh(new THREE.BoxGeometry(1.9,0.28,0.35), redMat);
+  bodyMain.position.set(0.05,1.02,0);
+  bike.add(bodyMain);
+
+  const seat = new THREE.Mesh(new THREE.BoxGeometry(0.55,0.14,0.42), darkMat);
+  seat.position.set(-0.55,1.18,0);
+  bike.add(seat);
+
+  const handlebarPost = new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.55,8), darkMat);
+  handlebarPost.position.set(1.15,1.28,0);
+  bike.add(handlebarPost);
+  const handlebar = new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.6,8), darkMat);
+  handlebar.rotation.z = Math.PI/2;
+  handlebar.position.set(1.18,1.55,0);
+  bike.add(handlebar);
+
+  const frontStrut = new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.75,8), darkMat);
+  frontStrut.position.set(1.15,0.85,0);
+  frontStrut.rotation.z = 0.15;
+  bike.add(frontStrut);
+
+  const headlamp = new THREE.Mesh(new THREE.SphereGeometry(0.09,10,10), goldMat);
+  headlamp.position.set(1.55,1.08,0);
+  bike.add(headlamp);
+
+  // delivery box (Zomato bag)
+  const box = new THREE.Mesh(new THREE.BoxGeometry(0.55,0.55,0.55), redMat);
+  box.position.set(-1.15,1.55,0);
+  bike.add(box);
+  const boxLid = new THREE.Mesh(new THREE.BoxGeometry(0.58,0.06,0.58), whiteMat);
+  boxLid.position.set(-1.15,1.83,0);
+  bike.add(boxLid);
+  const boxLogo = new THREE.Mesh(new THREE.CircleGeometry(0.13,16), whiteMat);
+  boxLogo.position.set(-1.15,1.55,0.28);
+  bike.add(boxLogo);
+
+  // rider
+  const rider = new THREE.Group();
+  const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.26,0.75,10), redMat);
+  torso.position.set(0.05,1.65,0);
+  torso.rotation.z = -0.28;
+  rider.add(torso);
+
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.22,14,14), skinMat);
+  head.position.set(0.42,2.18,0);
+  rider.add(head);
+
+  const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.25,14,14,0,Math.PI*2,0,Math.PI*0.62), darkMat);
+  helmet.position.set(0.42,2.24,0);
+  rider.add(helmet);
+
+  const armF = new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.55,8), redMat);
+  armF.position.set(0.75,1.5,0); armF.rotation.z = -1.0;
+  rider.add(armF);
+  const armB = new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.55,8), redMat);
+  armB.position.set(-0.35,1.6,0); armB.rotation.z = -0.6;
+  rider.add(armB);
+
+  const legF = new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.55,8), darkMat);
+  legF.position.set(0.35,1.05,0); legF.rotation.z = 0.5;
+  rider.add(legF);
+  const legB = new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.55,8), darkMat);
+  legB.position.set(-0.45,1.05,0); legB.rotation.z = 1.0;
+  rider.add(legB);
+
+  bike.add(rider);
+
+  // shadow
+  const shadow = new THREE.Mesh(
+    new THREE.CircleGeometry(1.35,24),
+    new THREE.MeshBasicMaterial({ color:0x000000, transparent:true, opacity:0.35 })
+  );
+  shadow.rotation.x = -Math.PI/2;
+  shadow.position.y = 0.005;
+  bike.add(shadow);
+
+  bike.scale.set(0.85,0.85,0.85);
+  scene.add(bike);
+
+  // speed particles
+  const particles = new THREE.Group();
+  const particleGeo = new THREE.SphereGeometry(0.03,6,6);
+  for (let i=0;i<14;i++){
+    const p = new THREE.Mesh(particleGeo, goldMat.clone());
+    p.userData.offset = Math.random()*10;
+    p.userData.lane = 0.4 + Math.random()*1.4;
+    particles.add(p);
+  }
+  scene.add(particles);
+
+  let t = 0;
+  const spanX = 9;
+  function animate(){
+    requestAnimationFrame(animate);
+    t += 0.016;
+
+    const cyclePos = (t*1.15) % (spanX*2+3) - spanX - 1.5;
+    bike.position.x = cyclePos;
+    bike.position.y = Math.sin(t*9)*0.035 + 0.02;
+    bike.rotation.z = Math.sin(t*9)*0.012;
+
+    wheelFront.children[0].rotation.x += 0.45;
+    wheelBack.children[0].rotation.x += 0.45;
+
+    particles.children.forEach((p,i)=>{
+      const px = ((t*1.15 + p.userData.offset*0.4) % (spanX*2+3)) - spanX - 1.5 - 1.5 - p.userData.lane;
+      p.position.set(px, 0.5 + (i%5)*0.12, (Math.random()-0.5)*0.4);
+      p.material.opacity = 0.5;
+    });
+
+    camera.position.x = bike.position.x * 0.06;
+    camera.lookAt(bike.position.x*0.5, 1, 0);
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', ()=>{
+    w = stage.clientWidth; h = stage.clientHeight;
+    camera.aspect = w/h; camera.updateProjectionMatrix();
+    renderer.setSize(w,h);
+  });
+})();
+</script>
+</body>
+</html>
