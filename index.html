@@ -419,7 +419,7 @@
 <!-- header -->
 <header class="nav">
   <div class="logo">
-    <span class="mark">Meghana's <em>Kitchen</em></span>
+    <span class="mark">Meghan's <em>Kitchen</em></span>
   </div>
   <nav class="links" id="navLinks">
     <a href="#home" onclick="closeNav()">Home</a>
@@ -427,8 +427,10 @@
     <a href="#nonveg" onclick="closeNav()">Non Veg</a>
     <a href="#egg" onclick="closeNav()">Egg</a>
     <a href="#fish" onclick="closeNav()">Fish</a>
+    <a href="#tandoori" onclick="closeNav()">Tandoori</a>
     <a href="#rice" onclick="closeNav()">Rice</a>
     <a href="#biryani" onclick="closeNav()">Biryani</a>
+    <a href="#roti" onclick="closeNav()">Roti &amp; Naan</a>
     <a href="#contact" onclick="closeNav()">Contact</a>
   </nav>
   <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -458,9 +460,11 @@
     <div class="chip" data-filter="egg">Egg</div>
     <div class="chip" data-filter="nonveg-starter">Non Veg</div>
     <div class="chip" data-filter="fish">Fish</div>
+    <div class="chip" data-filter="tandoori">Tandoori</div>
     <div class="chip" data-filter="curries">Curries</div>
     <div class="chip" data-filter="biryani">Biryani</div>
     <div class="chip" data-filter="rice">Rice</div>
+    <div class="chip" data-filter="roti">Roti &amp; Naan</div>
   </div>
 </div>
 
@@ -488,7 +492,7 @@
       <span class="lbl">Estimated total</span>
       <span class="val" id="trayTotalVal">₹0</span>
     </div>
-    <p class="tray-note">This is just a personal notepad to help you remember what you'd like</p>
+    <p class="tray-note">This is just a personal notepad to help you remember what you'd like — ordering happens on Zomato.</p>
     <button class="tray-clear" onclick="clearTray()">Clear All</button>
   </div>
 </div>
@@ -647,17 +651,40 @@ const MENU = [
   ["Curd Rice","rice","veg",80],
   ["Special Curd Rice","rice","veg",100],
   ["Plain Rice","rice","veg",40],
+
+  // --- Tandoori / Kebabs ---
+  ["Chicken Tikka","tandoori","nonveg",230],
+  ["Hariyali Kabab","tandoori","nonveg",250],
+  ["Malai Kabab","tandoori","nonveg",280],
+  ["Fish Tikka","tandoori","nonveg",320],
+  ["Tangdi Kabab","tandoori","nonveg",270],
+  ["Pahadi Kabab","tandoori","nonveg",260],
+  ["Paneer Tikka","tandoori","veg",200],
+
+  // --- Roti & Naan ---
+  ["Plain Roti","roti","veg",30],
+  ["Butter Roti","roti","veg",35],
+  ["Plain Naan","roti","veg",35],
+  ["Methi Roti","roti","veg",40],
+  ["Tandoori Paratha","roti","veg",35],
+  ["Masala Kulcha","roti","veg",45],
+  ["Plain Kulcha","roti","veg",40],
+  ["Butter Kulcha","roti","veg",45],
+  ["Garlic Naan","roti","veg",55],
+  ["Paneer Kulcha","roti","veg",60],
 ].map((row,i)=>({ id:i, name:row[0], cat:row[1], type:row[2], price:row[3] }));
 
 const CAT_LABEL = {
   "veg-starter":"Veg Starters", "egg":"Egg Specials", "nonveg-starter":"Non-Veg Starters",
-  "fish":"Fish Specials", "curries":"Curries", "biryani":"Biryani", "rice":"Rice Items"
+  "fish":"Fish Specials", "curries":"Curries", "biryani":"Biryani", "rice":"Rice Items",
+  "tandoori":"Tandoori & Kebabs", "roti":"Roti & Naan"
 };
 const CAT_DESC = {
   "veg-starter":"Crisp, tossed, and fired up dry starters", "egg":"Egg done every possible way",
   "nonveg-starter":"Chicken and wings, dry-roasted and fiery", "fish":"Fresh catch, Andhra style",
   "curries":"Slow-simmered gravies, veg and non-veg", "biryani":"Dum-cooked, layered, unhurried",
-  "rice":"Fried rice and comfort bowls"
+  "rice":"Fried rice and comfort bowls", "tandoori":"Straight off the charcoal tandoor",
+  "roti":"Fresh-baked breads, straight off the tawa"
 };
 const DESC_POOL = [
   "House special, made fresh to order.","Slow-cooked with our signature spice blend.",
@@ -675,7 +702,7 @@ function priceHtml(p){
 const flourishSVG = `<svg viewBox="0 0 120 14"><path class="flourish-line" fill="none" stroke-width="1" d="M0 7 H40 M80 7 H120 M50 7 C54 1, 60 1, 60 7 C60 13, 66 13, 70 7"/><circle class="flourish-line" cx="60" cy="7" r="1.6" fill="var(--gold)"/></svg>`;
 
 const menuRoot = document.getElementById('menuRoot');
-const ORDER = ["veg-starter","egg","nonveg-starter","fish","curries","biryani","rice"];
+const ORDER = ["veg-starter","egg","nonveg-starter","fish","tandoori","curries","biryani","rice","roti"];
 
 function render(filter, query){
   menuRoot.innerHTML = "";
