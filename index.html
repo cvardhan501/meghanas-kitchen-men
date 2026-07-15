@@ -660,6 +660,7 @@ const MENU = [
   ["Tangdi Kabab","tandoori","nonveg",270],
   ["Pahadi Kabab","tandoori","nonveg",260],
   ["Paneer Tikka","tandoori","veg",200],
+  ["Tandoori Chicken","tandoori","nonveg","250/300"],
 
   // --- Roti & Naan ---
   ["Plain Roti","roti","veg",30],
@@ -905,6 +906,8 @@ updateTrayChrome();
 /* fab click vs drag detection */
 (function(){
   let dragging = false, moved = false, startX=0, startY=0, offX=0, offY=0;
+  let isDragged = false; // track if FAB was ever manually dragged
+  
   function onDown(e){
     dragging = true; moved = false;
     const pt = e.touches ? e.touches[0] : e;
@@ -918,6 +921,7 @@ updateTrayChrome();
     const pt = e.touches ? e.touches[0] : e;
     if (Math.abs(pt.clientX-startX) > 6 || Math.abs(pt.clientY-startY) > 6) moved = true;
     if (!moved) return;
+    isDragged = true;
     e.preventDefault();
     let x = pt.clientX - offX, y = pt.clientY - offY;
     x = Math.max(8, Math.min(window.innerWidth - trayFab.offsetWidth - 8, x));
@@ -948,7 +952,7 @@ window.addEventListener('scroll', ()=>{
   scrollTimer = setTimeout(()=>{
     trayPanel.classList.remove('minimized');
     trayFab.classList.remove('hidden-scroll');
-  }, 500);
+  }, 600);
 }, { passive:true });
 
 /* toast notifications */
