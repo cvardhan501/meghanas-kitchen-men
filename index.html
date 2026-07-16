@@ -395,9 +395,132 @@
     .add-btn{ width:30px; height:30px; font-size:15px; border-radius:8px; }
     .card-bottom{ align-items:flex-end; }
   }
+  /* ================= Splash Screen ================= */
+
+#splash{
+    position:fixed;
+    inset:0;
+    background:#0a0a0d;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:99999;
+    transition:opacity .8s ease, visibility .8s ease;
+}
+
+#splash.hide{
+    opacity:0;
+    visibility:hidden;
+}
+
+.splash-content{
+    text-align:center;
+    animation:zoomIn 1s ease;
+}
+
+.plate{
+    font-size:70px;
+    animation:float 2s ease-in-out infinite;
+}
+
+.welcome{
+    color:#d4af6a;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    font-size:13px;
+    margin-top:20px;
+    font-family:'Manrope',sans-serif;
+}
+
+.splash-content h1{
+    margin:10px 0;
+    font-size:55px;
+    font-family:'Fraunces',serif;
+    color:#f4efe6;
+}
+
+.splash-content h1 span{
+    color:#e23744;
+    font-style:italic;
+}
+
+.tagline{
+    color:#b8b3ad;
+    margin-top:10px;
+    font-size:16px;
+}
+
+.gold-line{
+    width:220px;
+    height:4px;
+    background:rgba(255,255,255,.08);
+    border-radius:10px;
+    margin:35px auto 12px;
+    overflow:hidden;
+}
+
+.gold-fill{
+    width:0%;
+    height:100%;
+    background:linear-gradient(90deg,#d4af6a,#ffe6a8);
+    animation:loading 1.5s linear forwards;
+}
+.loading{
+    color:#999;
+    letter-spacing:3px;
+    font-size:12px;
+    text-transform:uppercase;
+}
+
+@keyframes loading{
+    from{width:0%;}
+    to{width:100%;}
+}
+
+@keyframes zoomIn{
+    from{
+        opacity:0;
+        transform:scale(.85);
+    }
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+@keyframes float{
+    0%,100%{
+        transform:translateY(0);
+    }
+    50%{
+        transform:translateY(-10px);
+    }
+}
 </style>
 </head>
 <body>
+  <!-- Splash Screen -->
+<div id="splash">
+    <div class="splash-content">
+
+        <div class="plate">🍽</div>
+
+        <p class="welcome">Welcome to</p>
+
+        <h1>Meghana's <span>Kitchen</span></h1>
+
+        <p class="tagline">
+            Authentic Andhra & Hyderabadi Cuisine
+        </p>
+
+        <div class="gold-line">
+            <div class="gold-fill"></div>
+        </div>
+
+        <p class="loading">Loading...</p>
+
+    </div>
+</div>
 
 <div class="bg-ambient"></div>
 <div class="grain"></div>
@@ -492,7 +615,7 @@
       <span class="lbl">Estimated total</span>
       <span class="val" id="trayTotalVal">₹0</span>
     </div>
-    <p class="tray-note">This is just a personal notepad to help you remember what you'd like </p>
+    <p class="tray-note">This is just a personal notepad to help you remember what you'd like — ordering happens on Zomato.</p>
     <button class="tray-clear" onclick="clearTray()">Clear All</button>
   </div>
 </div>
@@ -1155,6 +1278,23 @@ function closeNav(){ document.getElementById('navLinks').classList.remove('open'
     renderer.setSize(w,h);
   });
 })();
+/* ================= Splash Screen ================= */
+window.addEventListener("load", () => {
+
+    const splash = document.getElementById("splash");
+    const loadingBar = document.querySelector(".gold-fill");
+
+    loadingBar.addEventListener("animationend", () => {
+
+        splash.classList.add("hide");
+
+        setTimeout(() => {
+            splash.remove();
+        }, 500);
+
+    });
+
+});
 </script>
 </body>
 </html>
