@@ -61,34 +61,69 @@
 
   /* ---------- announcement bar ---------- */
   .announce-wrap{
-    position:fixed; top:14px; left:0; right:0; z-index:60;
+    position:fixed; top:12px; left:0; right:0; z-index:60;
     display:flex; justify-content:center; padding:0 16px;
   }
   .announce{
-    display:flex; align-items:center; gap:14px;
+    display:flex; align-items:center; gap:10px;
+    flex-wrap:nowrap; justify-content:center;
     background:rgba(23,22,29,0.55);
     border:1px solid var(--line);
     backdrop-filter:blur(18px) saturate(140%);
     -webkit-backdrop-filter:blur(18px) saturate(140%);
     border-radius:999px;
-    padding:9px 10px 9px 20px;
+    padding:7px 8px 7px 16px;
     box-shadow:0 8px 30px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04);
-    animation:floatBar 5s ease-in-out infinite;
+    animation:floatBar 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+    will-change:transform;
+    transform:translateZ(0);
+    -webkit-transform:translateZ(0);
     max-width:96vw;
+    overflow-x:visible;
   }
-  @keyframes floatBar{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-5px);} }
-  .announce span.msg{ font-size:13px; font-weight:600; letter-spacing:0.01em; color:var(--cream); white-space:nowrap; }
+  @keyframes floatBar{
+    0%{ transform:translateY(0) translateZ(0); opacity:1; }
+    25%{ transform:translateY(-4px) translateZ(0); }
+    50%{ transform:translateY(-6px) translateZ(0); }
+    75%{ transform:translateY(-4px) translateZ(0); }
+    100%{ transform:translateY(0) translateZ(0); opacity:1; }
+  }
+  @-webkit-keyframes floatBar{
+    0%{ -webkit-transform:translateY(0) translateZ(0); opacity:1; }
+    25%{ -webkit-transform:translateY(-4px) translateZ(0); }
+    50%{ -webkit-transform:translateY(-6px) translateZ(0); }
+    75%{ -webkit-transform:translateY(-4px) translateZ(0); }
+    100%{ -webkit-transform:translateY(0) translateZ(0); opacity:1; }
+  }
+  .announce span.msg{ font-size:11px; font-weight:600; letter-spacing:0.01em; color:var(--cream); white-space:nowrap; }
+  .announce-btns{ display:flex; gap:6px; align-items:center; flex-wrap:nowrap; justify-content:center; min-width:0; }
   .announce .btn-order{
-    white-space:nowrap; font-family:var(--font-body); font-weight:700; font-size:12.5px; letter-spacing:0.03em;
-    color:#fff; background:linear-gradient(135deg,var(--red),var(--red-2));
-    padding:9px 18px; border-radius:999px; text-decoration:none;
-    box-shadow:0 0 0 0 rgba(226,55,68,0.6);
-    animation:glowPulse 2.2s ease-in-out infinite;
-    border:none; cursor:pointer;
+    white-space:nowrap; font-family:var(--font-body); font-weight:700; font-size:10.5px; letter-spacing:0.02em;
+    color:#fff; padding:7px 12px; border-radius:999px; text-decoration:none;
+    border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all .25s ease;
+    min-width:84px;
   }
-  @keyframes glowPulse{
+  .announce .btn-icon{
+    width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center;
+  }
+  .announce .btn-icon svg{ width:100%; height:100%; display:block; }
+  .announce .btn-zomato{
+    background:linear-gradient(135deg,#e23744,#ff4d59);
+    box-shadow:0 0 0 0 rgba(226,55,68,0.6);
+    animation:glowPulseZomato 2.2s ease-in-out infinite;
+  }
+  .announce .btn-swiggy{
+    background:linear-gradient(135deg,#ff6b35,#ffa502);
+    box-shadow:0 0 0 0 rgba(255,107,53,0.6);
+    animation:glowPulseSwiggy 2.2s ease-in-out infinite;
+  }
+  @keyframes glowPulseZomato{
     0%,100%{ box-shadow:0 0 0 0 rgba(226,55,68,0.45), 0 4px 14px rgba(226,55,68,0.35); }
     50%{ box-shadow:0 0 0 8px rgba(226,55,68,0), 0 4px 22px rgba(226,55,68,0.55); }
+  }
+  @keyframes glowPulseSwiggy{
+    0%,100%{ box-shadow:0 0 0 0 rgba(255,107,53,0.45), 0 4px 14px rgba(255,107,53,0.35); }
+    50%{ box-shadow:0 0 0 8px rgba(255,107,53,0), 0 4px 22px rgba(255,107,53,0.55); }
   }
 
   /* ---------- header ---------- */
@@ -134,16 +169,48 @@
     max-width:520px; margin:22px auto 0; color:var(--muted); font-size:16px; line-height:1.6;
   }
   .hero-ctas{ display:flex; gap:12px; justify-content:center; margin-top:34px; flex-wrap:nowrap; }
+  .cta-icon{ width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; }
+  .cta-icon svg{ width:100%; height:100%; display:block; }
+  .btn-icon img{ width:100%; height:100%; display:block; object-fit:contain; }
   .cta-primary, .cta-secondary{
     font-family:var(--font-body); font-weight:700; font-size:14px; letter-spacing:0.02em;
     padding:15px 30px; border-radius:14px; text-decoration:none; cursor:pointer; border:none;
     transition:transform .25s ease, box-shadow .25s ease;
-    white-space:nowrap; text-align:center;
+    white-space:nowrap; text-align:center; display:inline-flex; align-items:center; justify-content:center; gap:10px;
+    -webkit-appearance:none;
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+    will-change:transform;
+    transform:translateZ(0);
+    -webkit-transform:translateZ(0);
+    min-height:44px;
+    min-width:44px;
   }
-  .cta-primary{ color:#fff; background:linear-gradient(135deg,var(--red),var(--red-2)); box-shadow:0 10px 30px rgba(226,55,68,0.3); }
-  .cta-primary:hover{ transform:translateY(-2px); box-shadow:0 14px 36px rgba(226,55,68,0.45); }
+  .cta-primary{ color:#fff; box-shadow:0 10px 30px rgba(226,55,68,0.3); }
+  .cta-primary.cta-zomato{ background:linear-gradient(135deg,#e23744,#ff4d59); box-shadow:0 10px 30px rgba(226,55,68,0.3); }
+  .cta-primary.cta-zomato:hover, .cta-primary.cta-zomato:active, .cta-primary.cta-zomato:focus{ 
+    transform:translateY(-2px) translateZ(0); 
+    box-shadow:0 14px 36px rgba(226,55,68,0.45);
+    outline:none;
+  }
+  .cta-primary.cta-swiggy{ background:linear-gradient(135deg,#ff6b35,#ffa502); box-shadow:0 10px 30px rgba(255,107,53,0.3); }
+  .cta-primary.cta-swiggy:hover, .cta-primary.cta-swiggy:active, .cta-primary.cta-swiggy:focus{ 
+    transform:translateY(-2px) translateZ(0); 
+    box-shadow:0 14px 36px rgba(255,107,53,0.45);
+    outline:none;
+  }
+  .cta-primary:not(.cta-zomato):not(.cta-swiggy){ background:linear-gradient(135deg,var(--red),var(--red-2)); }
+  .cta-primary:hover, .cta-primary:active, .cta-primary:focus{ 
+    transform:translateY(-2px) translateZ(0); 
+    box-shadow:0 14px 36px rgba(226,55,68,0.45);
+    outline:none;
+  }
   .cta-secondary{ color:var(--cream); background:rgba(255,255,255,0.05); border:1px solid var(--line); }
-  .cta-secondary:hover{ transform:translateY(-2px); border-color:var(--gold-soft); }
+  .cta-secondary:hover, .cta-secondary:active, .cta-secondary:focus{ 
+    transform:translateY(-2px) translateZ(0); 
+    border-color:var(--gold-soft);
+    outline:none;
+  }
 
   /* ---------- 3D bike stage ---------- */
   .bike-stage{
@@ -372,14 +439,30 @@
     nav.links a{ padding:13px 14px; border-bottom:1px solid var(--line); }
     nav.links a:last-child{ border-bottom:none; }
     .nav-toggle{ display:block; }
-    .announce span.msg{ font-size:10.5px; }
-    .announce{ padding:8px 8px 8px 12px; gap:8px; }
+    .announce span.msg{ font-size:10px; max-width:calc(100vw - 190px); overflow:hidden; text-overflow:ellipsis; }
+    .announce{ padding:6px 6px 6px 10px; gap:6px; }
+    .announce .btn-order{ font-size:10px; padding:6px 10px; min-width:72px; }
+    .announce .btn-icon{ width:20px; height:20px; }
     .bike-stage{ height:150px; }
     header.nav{ padding-top:70px; }
     .hero{ padding-top:150px; }
 
-    .hero-ctas{ gap:8px; }
-    .cta-primary, .cta-secondary{ padding:13px 14px; font-size:12.5px; flex:1 1 0; }
+    .hero-ctas{ gap:10px; flex-wrap:wrap; justify-content:center; }
+    .hero-ctas .cta-primary{
+      padding:14px 16px;
+      font-size:13px;
+      min-height:48px;
+      flex:0 1 calc(50% - 10px);
+      max-width:calc(50% - 10px);
+    }
+    .hero-ctas .cta-secondary{
+      padding:14px 16px;
+      font-size:13px;
+      min-height:48px;
+      flex:0 0 calc(50% - 10px);
+      max-width:calc(50% - 10px);
+      align-self:center;
+    }
 
     .menu-section{ padding:44px 14px 0; }
     .section-head{ margin-bottom:22px; }
@@ -395,9 +478,7 @@
     .add-btn{ width:30px; height:30px; font-size:15px; border-radius:8px; }
     .card-bottom{ align-items:flex-end; }
   }
-  /* ================= Splash Screen ================= */
-
-#splash{
+  #splash{
     position:fixed;
     inset:0;
     background:#0a0a0d;
@@ -499,8 +580,7 @@
 </style>
 </head>
 <body>
-  <!-- Splash Screen -->
-<div id="splash">
+  <div id="splash">
     <div class="splash-content">
 
         <div class="plate">🍽</div>
@@ -534,8 +614,17 @@
 <!-- announcement bar -->
 <div class="announce-wrap">
   <div class="announce">
-    <span class="msg">🍽️ We're LIVE on Zomato — Order Online</span>
-    <a class="btn-order" href="https://zomato.onelink.me/xqzv/2e2047tk" target="_blank" rel="noopener">Order Now</a>
+    <span class="msg">🍽️ We are LIVE on Zomato and Swiggy </span>
+    <div class="announce-btns">
+      <a class="btn-order btn-zomato" href="https://zomato.onelink.me/xqzv/2e2047tk" target="_blank" rel="noopener">
+        <span class="btn-icon" aria-hidden="true"><svg role="img" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>Zomato</title><path d="M19.615 9.45l-1.258.473-.167.71-.446.021-.115.978h.408l-.211 1.51c-.131.939.036 1.381.865 1.381.488 0 .91-.175 1.135-.297l.145-.9c-.167.083-.436.19-.618.19-.247 0-.276-.13-.225-.488l.189-1.396h.843c.03-.206.131-.877.16-1h-.865zm-3.779 1.002c-.115.002-.236.01-.361.026a3.592 3.592 0 0 0-1.347.432l.26.789c.269-.15.615-.28.978-.326.538-.066.757.1.79.375.014.109.004.199-.005.289l-.014.056a3.46 3.46 0 0 0-1.097-.036c-.518.063-.943.273-1.204.6a1.324 1.324 0 0 0-.225 1.034c.127.583.553.84 1.199.76.45-.055.812-.27 1.076-.63a2.665 2.665 0 0 1-.03.304 1.74 1.74 0 0 1-.072.29l1.244.001a3.657 3.657 0 0 1-.001-.365c.036-.459.118-1.143.247-2.051a2.397 2.397 0 0 0-.002-.59c-.08-.644-.628-.969-1.436-.958zm6.536.063c-1.194 0-2.107 1.067-2.107 2.342 0 .959.552 1.693 1.628 1.693 1.2 0 2.107-1.067 2.107-2.35 0-.95-.538-1.685-1.628-1.685zm-11.777.041c-.538 0-1.12.465-1.52 1.236.102-.504.08-1.076.051-1.198a8.964 8.964 0 0 1-1.287.122 6.9 6.9 0 0 1-.073 1.243l-.167 1.145c-.066.45-.138.969-.211 1.297h1.353c.007-.199.058-.511.094-.786l.116-.786c.095-.511.502-1.114.815-1.114.182 0 .175.176.124.504l-.131.885c-.066.45-.138.969-.211 1.297h1.367c.008-.199.051-.512.088-.786l.116-.786c.094-.512.502-1.114.814-1.114.182 0 .175.168.146.396l-.327 2.29H13l.438-2.609c.095-.649.044-1.236-.676-1.236-.523 0-1.09.443-1.49 1.182.087-.61.036-1.182-.677-1.182zm-4.88.008c-1.177 0-2.08 1.053-2.08 2.312 0 .946.546 1.67 1.608 1.67 1.185 0 2.08-1.052 2.08-2.319 0-.938-.531-1.663-1.607-1.663zm-5.126.091c-.05.39-.102.778-.175 1.13.328-.008.619-.016 1.411-.016l-1.81 1.96-.015.703c.444-.03.997-.039 1.63-.039.566 0 1.134.008 1.497.039.065-.458.13-.763.21-1.137-.275.015-.755.023-1.512.023l1.81-1.969.023-.694c-.437.023-.83.03-1.52.03-.749 0-.975-.007-1.549-.03zm4.988.927c.255 0 .408.228.408.701 0 .687-.276 1.251-.626 1.251-.261 0-.414-.236-.414-.702 0-.694.283-1.25.632-1.25zm16.629 0c.254 0 .407.228.407.701 0 .687-.276 1.251-.625 1.251-.262 0-.415-.236-.415-.702 0-.694.284-1.25.633-1.25zM15.51 12.64c.206-.003.403.024.55.058l-.013.118c-.075.44-.39.881-.848.938-.31.037-.578-.148-.608-.39a.538.538 0 0 1 .114-.41c.117-.159.336-.268.599-.3.069-.009.138-.013.206-.014Z"/></svg></span>
+        Order Now
+      </a>
+      <a class="btn-order btn-swiggy" href="https://www.swiggy.com/menu/1404928?source=sharing" target="_blank" rel="noopener">
+        <span class="btn-icon" aria-hidden="true"><svg role="img" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>Swiggy</title><path d="M12.034 24c-.376-.411-2.075-2.584-3.95-5.513-.547-.916-.901-1.63-.833-1.814.178-.48 3.355-.743 4.333-.308.298.132.29.307.29.409 0 .44-.022 1.619-.022 1.619a.441.441 0 1 0 .883-.002l-.005-2.939c0-.255-.278-.319-.331-.329-.511-.002-1.548-.006-2.661-.006-2.457 0-3.006.101-3.423-.172-.904-.591-2.383-4.577-2.417-6.819C3.849 4.964 5.723 2.225 8.362.868A8.13 8.13 0 0 1 12.026 0c4.177 0 7.617 3.153 8.075 7.209l.001.011c.084.981-5.321 1.189-6.39.904-.164-.044-.206-.212-.206-.284L13.5 4.996a.442.442 0 0 0-.884.002l.009 3.866a.33.33 0 0 0 .268.32l3.354-.001c1.79 0 2.542.207 3.042.588.333.254.461.739.349 1.37C18.633 16.755 12.273 23.71 12.034 24z"/></svg></span>
+        Order Now
+      </a>
+    </div>
   </div>
 </div>
 
@@ -565,7 +654,14 @@
   <h1>Bold flavour,<br><span class="accent">served</span> <em>fresh.</em></h1>
   <p class="sub">From smoky Andhra chicken to slow-cooked biryani — every dish on our menu, ready to browse, and one tap away from your door.</p>
   <div class="hero-ctas">
-    <a class="cta-primary" href="https://zomato.onelink.me/xqzv/2e2047tk" target="_blank" rel="noopener">Order on Zomato</a>
+    <a class="cta-primary cta-zomato" href="https://zomato.onelink.me/xqzv/2e2047tk" target="_blank" rel="noopener">
+      <span class="cta-icon" aria-hidden="true"><svg role="img" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>Zomato</title><path d="M19.615 9.45l-1.258.473-.167.71-.446.021-.115.978h.408l-.211 1.51c-.131.939.036 1.381.865 1.381.488 0 .91-.175 1.135-.297l.145-.9c-.167.083-.436.19-.618.19-.247 0-.276-.13-.225-.488l.189-1.396h.843c.03-.206.131-.877.16-1h-.865zm-3.779 1.002c-.115.002-.236.01-.361.026a3.592 3.592 0 0 0-1.347.432l.26.789c.269-.15.615-.28.978-.326.538-.066.757.1.79.375.014.109.004.199-.005.289l-.014.056a3.46 3.46 0 0 0-1.097-.036c-.518.063-.943.273-1.204.6a1.324 1.324 0 0 0-.225 1.034c.127.583.553.84 1.199.76.45-.055.812-.27 1.076-.63a2.665 2.665 0 0 1-.03.304 1.74 1.74 0 0 1-.072.29l1.244.001a3.657 3.657 0 0 1-.001-.365c.036-.459.118-1.143.247-2.051a2.397 2.397 0 0 0-.002-.59c-.08-.644-.628-.969-1.436-.958zm6.536.063c-1.194 0-2.107 1.067-2.107 2.342 0 .959.552 1.693 1.628 1.693 1.2 0 2.107-1.067 2.107-2.35 0-.95-.538-1.685-1.628-1.685zm-11.777.041c-.538 0-1.12.465-1.52 1.236.102-.504.08-1.076.051-1.198a8.964 8.964 0 0 1-1.287.122 6.9 6.9 0 0 1-.073 1.243l-.167 1.145c-.066.45-.138.969-.211 1.297h1.353c.007-.199.058-.511.094-.786l.116-.786c.095-.511.502-1.114.815-1.114.182 0 .175.176.124.504l-.131.885c-.066.45-.138.969-.211 1.297h1.367c.008-.199.051-.512.088-.786l.116-.786c.094-.512.502-1.114.814-1.114.182 0 .175.168.146.396l-.327 2.29H13l.438-2.609c.095-.649.044-1.236-.676-1.236-.523 0-1.09.443-1.49 1.182.087-.61.036-1.182-.677-1.182zm-4.88.008c-1.177 0-2.08 1.053-2.08 2.312 0 .946.546 1.67 1.608 1.67 1.185 0 2.08-1.052 2.08-2.319 0-.938-.531-1.663-1.607-1.663zm-5.126.091c-.05.39-.102.778-.175 1.13.328-.008.619-.016 1.411-.016l-1.81 1.96-.015.703c.444-.03.997-.039 1.63-.039.566 0 1.134.008 1.497.039.065-.458.13-.763.21-1.137-.275.015-.755.023-1.512.023l1.81-1.969.023-.694c-.437.023-.83.03-1.52.03-.749 0-.975-.007-1.549-.03zm4.988.927c.255 0 .408.228.408.701 0 .687-.276 1.251-.626 1.251-.261 0-.414-.236-.414-.702 0-.694.283-1.25.632-1.25zm16.629 0c.254 0 .407.228.407.701 0 .687-.276 1.251-.625 1.251-.262 0-.415-.236-.415-.702 0-.694.284-1.25.633-1.25zM15.51 12.64c.206-.003.403.024.55.058l-.013.118c-.075.44-.39.881-.848.938-.31.037-.578-.148-.608-.39a.538.538 0 0 1 .114-.41c.117-.159.336-.268.599-.3.069-.009.138-.013.206-.014Z"/></svg></span>
+      Order on Zomato
+    </a>
+    <a class="cta-primary cta-swiggy" href="https://www.swiggy.com/menu/1404928?source=sharing" target="_blank" rel="noopener">
+      <span class="cta-icon" aria-hidden="true"><svg role="img" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>Swiggy</title><path d="M12.034 24c-.376-.411-2.075-2.584-3.95-5.513-.547-.916-.901-1.63-.833-1.814.178-.48 3.355-.743 4.333-.308.298.132.29.307.29.409 0 .44-.022 1.619-.022 1.619a.441.441 0 1 0 .883-.002l-.005-2.939c0-.255-.278-.319-.331-.329-.511-.002-1.548-.006-2.661-.006-2.457 0-3.006.101-3.423-.172-.904-.591-2.383-4.577-2.417-6.819C3.849 4.964 5.723 2.225 8.362.868A8.13 8.13 0 0 1 12.026 0c4.177 0 7.617 3.153 8.075 7.209l.001.011c.084.981-5.321 1.189-6.39.904-.164-.044-.206-.212-.206-.284L13.5 4.996a.442.442 0 0 0-.884.002l.009 3.866a.33.33 0 0 0 .268.32l3.354-.001c1.79 0 2.542.207 3.042.588.333.254.461.739.349 1.37C18.633 16.755 12.273 23.71 12.034 24z"/></svg></span>
+      Order on Swiggy
+    </a>
     <a class="cta-secondary" href="#veg">Explore the Menu</a>
   </div>
 
@@ -627,14 +723,16 @@
       <div class="logo" style="margin-bottom:14px;"><span class="mark">Meghana's <em>Kitchen</em></span></div>
       <p style="max-width:320px;">Andhra and Hyderabadi cooking, made the slow way — bold spice, honest ingredients, fast delivery.</p>
       <div class="social-row">
-        
-        <!-- <a href="https://zomato.onelink.me/xqzv/2e2047tk" target="_blank" rel="noopener" aria-label="Zomato">Z</a>
-       -->
+        <a href="#" aria-label="Instagram">IG</a>
+        <a href="#" aria-label="Facebook">FB</a>
+        <a href="https://zomato.onelink.me/xqzv/2e2047tk" target="_blank" rel="noopener" aria-label="Zomato">Z</a>
+        <a href="https://www.swiggy.com/menu/1404928?source=sharing" target="_blank" rel="noopener" aria-label="Swiggy">S</a>
+        <a href="#" aria-label="Google Maps">GM</a>
       </div>
     </div>
     <div>
       <h4>Visit</h4>
-      <p>🕒 12:00 PM – 11:00 PM, all week</p>
+      <p>🕒 12:00 PM – 10:00 PM, all week</p>
     </div>
     <div>
       <h4>Quick Links</h4>
@@ -642,6 +740,7 @@
       <p><a href="#nonveg">Non-Veg Menu</a></p>
       <p><a href="#biryani">Biryani</a></p>
       <p><a href="https://zomato.onelink.me/xqzv/2e2047tk" target="_blank" rel="noopener">Order on Zomato</a></p>
+      <p><a href="https://www.swiggy.com/menu/1404928?source=sharing" target="_blank" rel="noopener">Order on Swiggy</a></p>
     </div>
   </div>
   <div class="footer-bottom">© 2026 Meghana's Kitchen. All rights reserved.</div>
@@ -661,7 +760,6 @@ const MENU = [
   ["Mushroom Pepper Dry","veg-starter","veg",160],
   ["Mushroom Chilli","veg-starter","veg",170],
   ["Mushroom Manchurian","veg-starter","veg",170],
-  ["Gobi Pepper Dry","veg-starter","veg",100],
   ["Gobi Manchurian","veg-starter","veg",110],
   ["Gobi Kaba","veg-starter","veg",120],
   ["Gobi Chilli","veg-starter","veg",130],
@@ -670,7 +768,8 @@ const MENU = [
   ["Palak Pakoda","veg-starter","veg",100],
   ["Onion Pakoda","veg-starter","veg",100],
   ["Capsicum Pakoda","veg-starter","veg",110],
- 
+  ["Groundnut Dry","veg-starter","veg",60],
+  ["Groundnut Masala","veg-starter","veg",100],
 
   // --- Egg Starter + Egg Masala ---
   ["Egg Manchurian","egg","egg",120],
@@ -683,24 +782,21 @@ const MENU = [
   ["Egg Masala","egg","egg",120],
   ["Egg Keema","egg","egg",120],
 
-  // --- Non-Veg Starter ---
+  // --- Chicken Starters ---
   ["Chicken Manchurian","nonveg-starter","nonveg",230],
-  ["Chicken Chilli","nonveg-starter","nonveg",230],
+  ["Chilli Chicken","nonveg-starter","nonveg",230],
   ["Chicken 65","nonveg-starter","nonveg",230],
   ["Chicken 555","nonveg-starter","nonveg",240],
-  ["Chicken Lollipop (4pc)","nonveg-starter","nonveg",230],
+  ["Chicken Lollipop","nonveg-starter","nonveg",230],
   ["Chicken Pepper Dry","nonveg-starter","nonveg",230],
-  ["Chicken Kabab","nonveg-starter","nonveg",200],
   ["Chicken Mongolian","nonveg-starter","nonveg",230],
-  ["Chicken Ghee Roast","nonveg-starter","nonveg",230],
-  ["Chicken Lemon","nonveg-starter","nonveg",250],
-  ["Chicken Royal","nonveg-starter","nonveg",250],
-  ["Chicken Garlic","nonveg-starter","nonveg",260],
-  ["Chicken Sehezwan","nonveg-starter","nonveg",250],
-  ["Chicken Guntur","nonveg-starter","nonveg",260],
-  ["Chicken Andhra Dry","nonveg-starter","nonveg",240],
+  ["Chicken Cheese Roast","nonveg-starter","nonveg",240],
+  ["Lemon Chicken","nonveg-starter","nonveg",250],
+  ["Royal Chicken","nonveg-starter","nonveg",250],
+  ["Chicken Schezwan","nonveg-starter","nonveg",250],
+  ["Cashew Chicken","nonveg-starter","nonveg",260],
+  ["Andhra Chicken Dry","nonveg-starter","nonveg",240],
   ["Chicken Wings","nonveg-starter","nonveg",240],
-  ["Chicken Wings Andhra","nonveg-starter","nonveg",240],
 
   // --- Non-Veg Masala (curries) ---
   ["Butter Chicken Masala","curries","nonveg",230],
@@ -1278,7 +1374,6 @@ function closeNav(){ document.getElementById('navLinks').classList.remove('open'
     renderer.setSize(w,h);
   });
 })();
-/* ================= Splash Screen ================= */
 window.addEventListener("load", () => {
 
     const splash = document.getElementById("splash");
